@@ -1,0 +1,6 @@
+department
+Who works in the CS department
+What CS professors are there
+How many CS professors are there
+What are the names of the professors in computer science
+Who teaches computer science here
