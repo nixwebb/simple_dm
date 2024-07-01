@@ -12,7 +12,10 @@ import google_asr_action.msg
 
 
 facepub = rospy.Publisher('face_listener', String, queue_size=10)
-nlu = da.Vectorize('/home/nick/catkin_ws/src/simple_dm/src/state_data/')
+
+
+# The path is hardcoded here
+nlu = da.Vectorize('/home/webbn/catkin_ws/src/simple_dm/src/state_data/')
 
 
 class SimpleGreet(smach.State):
@@ -39,8 +42,7 @@ class HCIHY(smach.State):
 
 class Process(smach.State):
     def __init__(self):
-        #self.pub = rospy.Publisher('facelistner', String, queue_size=10)
-        smach.State.__init__(self, outcomes=['valerie','crochet','end','hcihy'],
+        smach.State.__init__(self, outcomes=['valerie','crochet','end','hcihy','department','unknown'],
                                     input_keys=['response'])
 
     def execute(self, userdata):
@@ -50,20 +52,9 @@ class Process(smach.State):
         answer = nlu.do_query(text)
         print(text,answer)
         return answer
-        #if text == 'valerie':
-        #    return 'valerie'
-        #elif text =='crochet':
-        #    return 'crochet'
-        #elif text =='end':
-        #    return 'end'
-        #else:
-        #    return 'hcihy'
 
-
-# define state Bar
 class Valerie(smach.State):
     def __init__(self):
-        #self.pub = rospy.Publisher('facelistner', String, queue_size=10)
         smach.State.__init__(self, outcomes=['hcihy'])
 
     def execute(self, userdata):
@@ -75,7 +66,6 @@ class Valerie(smach.State):
 
 class Crochet(smach.State):
     def __init__(self):
-        #self.pub = rospy.Publisher('facelistner', String, queue_size=10)
 
         smach.State.__init__(self, outcomes=['hcihy'])
 
@@ -85,9 +75,31 @@ class Crochet(smach.State):
         print("say::Crochet is a lab in the CS Department")
         return 'hcihy'
 
+class Department(smach.State):
+    def __init__(self):
+
+        smach.State.__init__(self, outcomes=['hcihy'])
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state Department')
+        text = "say::The CS department is really cool!"
+        facepub.publish(text)
+        print(text)
+        return 'hcihy'
+
+class Unknown(smach.State):
+    def __init__(self):
+
+        smach.State.__init__(self, outcomes=['hcihy'])
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state Unknown')
+        facepub.publish("say::I'm sorry, I didn't get that")
+        print("say::I'm sorry, I didn't get that")
+        return 'hcihy'
+
 class End(smach.State):
     def __init__(self):
-        #self.pub = rospy.Publisher('facelistner', String, queue_size=10)
 
         smach.State.__init__(self, outcomes=['final'])
 
@@ -113,10 +125,6 @@ def main():
         smach.StateMachine.add('HCIHY', HCIHY(), 
                                transitions={'asr':'ASR'})
 
-#        smach.StateMachine.add('ASR', 
-#                            smach_ros.SimpleActionState('dialog', dialog_action.msg.DialogAction,result_slots=['response']), 
-#                            {'succeeded':'PROCESS'})
-
 
         smach.StateMachine.add('ASR', 
                             smach_ros.SimpleActionState('ASR_Node', google_asr_action.msg.GoogleASRAction,result_slots=['response']), 
@@ -127,10 +135,18 @@ def main():
                                transitions={'valerie':'VALERIE', 
                                             'crochet':'CROCHET',
                                             'hcihy':'HCIHY',
+                                            'department':'DEPARTMENT',
+                                            'unknown':'UNKNOWN',
                                             'end':'END'
                                             })
 
         smach.StateMachine.add('VALERIE', Valerie(), 
+                               transitions={'hcihy':'HCIHY'})
+
+        smach.StateMachine.add('DEPARTMENT', Department(), 
+                               transitions={'hcihy':'HCIHY'})
+
+        smach.StateMachine.add('UNKNOWN', Unknown(), 
                                transitions={'hcihy':'HCIHY'})
 
 

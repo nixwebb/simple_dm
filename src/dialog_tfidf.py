@@ -52,8 +52,18 @@ class Vectorize:
         q_cos = (self.matrix * query_vec.T).toarray()
         return(self.index[np.argmax(q_cos)])
 
-#v = Vectorize('/home/nick/catkin_ws/src/simple_dm/src/state_data/')
-#print('testing')
+# For testing only
+#
+#v = Vectorize('/home/webbn/catkin_ws/src/simple_dm/src/state_data/')
+#print('testing\n\n')
+#print('how many professors are there')
 #print(v.do_query('how many professors are there'))
+#print()
+#
+#print('what is your name')
 #print(v.do_query('what is your name'))
-#print(v.do_query('what kind of work takes place here'))
+#print()
+#
+#print()
+#print('what happens in this lab')
+#print(v.do_query('hi valerie how are you and what happens in this lab'))
