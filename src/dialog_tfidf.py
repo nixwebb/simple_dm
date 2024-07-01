@@ -18,9 +18,6 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 import glob
 
-# Only for Drive
-#from google.colab import drive
-#drive.mount('/content/drive')
 
 class Vectorize:
 
@@ -50,12 +47,23 @@ class Vectorize:
         '''Given a query, use the matrix to compute COS, and return the max value'''
         query_vec = self.tv.transform([query])
         q_cos = (self.matrix * query_vec.T).toarray()
-        return(self.index[np.argmax(q_cos)])
+
+        # NEW: Maybe look at real low threshold?
+        if sum(q_cos) == 0:
+            return('unknown')
+        else:
+            return(self.index[np.argmax(q_cos)])
 
 # For testing only
 #
 #v = Vectorize('/home/webbn/catkin_ws/src/simple_dm/src/state_data/')
 #print('testing\n\n')
+
+#while True:
+#    text = input('Enter test string:')
+#    print(v.do_query(text))
+
+
 #print('how many professors are there')
 #print(v.do_query('how many professors are there'))
 #print()

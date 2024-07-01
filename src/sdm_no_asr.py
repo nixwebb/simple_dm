@@ -52,10 +52,15 @@ class Process(smach.State):
         # Below all commented to not require ASR
         #text = userdata.response
         #print('TEXT is:',text)
-        #answer = nlu.do_query(text)
-        #print(text,answer)
 
-        answer = input('Enter trigger:').lower()
+
+	# Uncomment this to type TEXT
+        text = input('Enter user response:')
+        answer = nlu.do_query(text)
+        print('User:{} : Trigger:{}'.format(text,answer))
+
+        # Or just use this to get trigger
+        #answer = input('Enter trigger:').lower()
         return answer
 
 class Valerie(smach.State):
